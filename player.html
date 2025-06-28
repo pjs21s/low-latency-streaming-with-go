@@ -19,6 +19,29 @@
         var video = document.getElementById('video');
         var videoSrc = 'http://localhost:8080/master.m3u8'; // 우리 서버 주소
 
+         // --- 측정 로직 추가 시작 ---
+        let playRequestTime = 0;
+
+        // '재생' 이벤트가 발생하면 (사용자가 재생 버튼을 누르거나 자동재생 시작)
+        // 그 순간의 시간을 기록합니다.
+        video.addEventListener('play', () => {
+            if (playRequestTime === 0) { // 처음 한 번만 기록
+                playRequestTime = performance.now();
+                console.log('재생 시작 요청 시간 기록:', playRequestTime);
+            }
+        });
+
+        // '재생 중' 이벤트가 발생하면 (버퍼링이 끝나고 실제 영상 프레임이 처음 나올 때)
+        // 시작 요청 시간과의 차이를 계산합니다.
+        video.addEventListener('playing', () => {
+            if (playRequestTime > 0) {
+                const timeToFirstFrame = performance.now() - playRequestTime;
+                console.log(`%c🎉 첫 프레임까지 걸린 시간 (TTFF): ${timeToFirstFrame.toFixed(2)} ms`, 'color: blue; font-size: 1.2em;');
+                playRequestTime = -1; // 측정이 끝났음을 표시
+            }
+        });
+        // --- 측정 로직 추가 끝 ---
+
         if (Hls.isSupported()) {
             var hls = new Hls();
             hls.loadSource(videoSrc);
