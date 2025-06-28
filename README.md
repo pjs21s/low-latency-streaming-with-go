@@ -1,1 +1,1 @@
-Go를 기반으로 저지연 스트리밍을 개발하면서 학습하기 위한 프로젝트
+Projects to learn while developing low-latency streaming in Go
