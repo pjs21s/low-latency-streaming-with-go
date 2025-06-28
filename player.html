@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-g">
+    <title>HLS ABR Test Player</title>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; }
+        video { width: 80%; max-width: 800px; background-color: black; }
+        #qualityLevels { margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h1>My Go HLS ABR Server Test</h1>
+    <video id="video" controls></video>
+    <div id="qualityLevels"></div>
+
+    <script>
+        var video = document.getElementById('video');
+        var videoSrc = 'http://localhost:8080/master.m3u8'; // 우리 서버 주소
+
+        if (Hls.isSupported()) {
+            var hls = new Hls();
+            hls.loadSource(videoSrc);
+            hls.attachMedia(video);
+
+            hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
+                console.log('Manifest loaded, found ' + data.levels.length + ' quality levels');
+
+                const qualityLevelsDiv = document.getElementById('qualityLevels');
+
+                // "Auto" 버튼 생성
+                const autoButton = document.createElement('button');
+                autoButton.innerText = 'Auto';
+                autoButton.onclick = () => { hls.currentLevel = -1; }; // -1은 자동 모드
+                qualityLevelsDiv.appendChild(autoButton);
+
+                // 각 화질별 선택 버튼 생성
+                data.levels.forEach((level, index) => {
+                    const button = document.createElement('button');
+                    button.innerText = level.height + 'p'; // 720p, 360p
+                    button.onclick = () => { hls.currentLevel = index; };
+                    qualityLevelsDiv.appendChild(button);
+                });
+            });
+
+        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+            // Safari 같은 네이티브 지원 브라우저용
+            video.src = videoSrc;
+        }
+    </script>
+</body>
+</html>
