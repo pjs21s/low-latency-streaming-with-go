@@ -1,4 +1,4 @@
-package lowlatencystreaming
+package main
 
 import "strings"
 
