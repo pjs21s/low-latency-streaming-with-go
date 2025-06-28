@@ -43,7 +43,14 @@
         // --- 측정 로직 추가 끝 ---
 
         if (Hls.isSupported()) {
-            var hls = new Hls();
+            // VOD Fast Start를 위한 hls.js 설정
+            var config = {
+                // 이 설정들은 플레이어가 버퍼링보다 즉시 재생을 우선하도록 유도합니다.
+                maxBufferLength: 30,
+                maxMaxBufferLength: 120, // 2분
+            };
+
+            var hls = new Hls(config);
             hls.loadSource(videoSrc);
             hls.attachMedia(video);
 
